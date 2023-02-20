@@ -1,0 +1,12 @@
+/workspaces/CSFParser/CSFParser.Lib/bin/Debug/net7.0/CSFParser.Lib.deps.json
+/workspaces/CSFParser/CSFParser.Lib/bin/Debug/net7.0/CSFParser.Lib.dll
+/workspaces/CSFParser/CSFParser.Lib/bin/Debug/net7.0/CSFParser.Lib.pdb
+/workspaces/CSFParser/CSFParser.Lib/obj/Debug/net7.0/CSFParser.Lib.csproj.AssemblyReference.cache
+/workspaces/CSFParser/CSFParser.Lib/obj/Debug/net7.0/CSFParser.Lib.GeneratedMSBuildEditorConfig.editorconfig
+/workspaces/CSFParser/CSFParser.Lib/obj/Debug/net7.0/CSFParser.Lib.AssemblyInfoInputs.cache
+/workspaces/CSFParser/CSFParser.Lib/obj/Debug/net7.0/CSFParser.Lib.AssemblyInfo.cs
+/workspaces/CSFParser/CSFParser.Lib/obj/Debug/net7.0/CSFParser.Lib.csproj.CoreCompileInputs.cache
+/workspaces/CSFParser/CSFParser.Lib/obj/Debug/net7.0/CSFParser.Lib.dll
+/workspaces/CSFParser/CSFParser.Lib/obj/Debug/net7.0/refint/CSFParser.Lib.dll
+/workspaces/CSFParser/CSFParser.Lib/obj/Debug/net7.0/CSFParser.Lib.pdb
+/workspaces/CSFParser/CSFParser.Lib/obj/Debug/net7.0/ref/CSFParser.Lib.dll

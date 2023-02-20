@@ -1,0 +1,36 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v7.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v7.0": {
+      "CSFParser.Demo/1.0.0": {
+        "dependencies": {
+          "CSFParser.Lib": "1.0.0"
+        },
+        "runtime": {
+          "CSFParser.Demo.dll": {}
+        }
+      },
+      "CSFParser.Lib/1.0.0": {
+        "runtime": {
+          "CSFParser.Lib.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "CSFParser.Demo/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "CSFParser.Lib/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
