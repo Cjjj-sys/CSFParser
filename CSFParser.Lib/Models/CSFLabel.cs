@@ -18,7 +18,7 @@
     Note: The label name is case-insensitive. If a label name is shown up for more than once, the last item will actually be loaded by the game.
 **/
 public class CSFLabel {
-    int NumberOfStringPairs {get;set;}
-    int LabelNameLength {get;set;}
-    string LabelName {get;set;}
+    public int NumberOfStringPairs {get;set;}
+    public int LabelNameLength {get;set;}
+    public string LabelName {get;set;}
 }
