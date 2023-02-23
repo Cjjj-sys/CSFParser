@@ -22,31 +22,29 @@ class Program {
             switch (state)
             {
                 case State.Header:
-                    var p = i;
-                    var identifier = csfBytes[p..4];
-                    if (CheckIdentifier(identifier))
+                    var identifier = csfBytes[i..4];
+                    if (GetIdentifier(identifier) == CSFIdentifier.FSC)
                     {
-                        p += 4;
-                        var version = csfBytes[p..(p+4)];
-                        header.Version = Convert.ToInt16(version);
+                        i += 4;
+                        var version = csfBytes[i..(i+4)];
+                        header.Version = BitConverter.ToInt32(version);
 
-                        p += 4;
-                        var numLabels = csfBytes[p..(p+4)];
-                        header.NumLabels = Convert.ToInt16(numLabels);
+                        i += 4;
+                        var numLabels = csfBytes[i..(i+4)];
+                        header.NumLabels = BitConverter.ToInt32(numLabels);
 
-                        p += 4;
-                        var numStrings = csfBytes[p..(p+4)];
-                        header.NumStrings = Convert.ToInt16(numStrings);
+                        i += 4;
+                        var numStrings = csfBytes[i..(i+4)];
+                        header.NumStrings = BitConverter.ToInt32(numStrings);
 
-                        p += 4;
-                        var unused = csfBytes[p..(p+4)];
-                        header.unused = Convert.ToInt16(unused);
+                        i += 4;
+                        var unused = csfBytes[i..(i+4)];
+                        header.unused = BitConverter.ToInt32(unused);
 
-                        p += 4;
-                        var language = csfBytes[p..(p+4)];
-                        header.Language = (CSFLanguage)Convert.ToInt16(language);
+                        i += 4;
+                        var language = csfBytes[i..(i+4)];
+                        header.Language = (CSFLanguage)BitConverter.ToInt32(language);
 
-                        i = p;
                         state = State.Labels;
                     }
                     else {
@@ -54,6 +52,34 @@ class Program {
                     }
                     break;
                 case State.Labels:
+                    var labelIdentifier = csfBytes[i..(i+4)];
+                    if (GetIdentifier(labelIdentifier) == CSFIdentifier.LBL)
+                    {
+                        CSFLabel label = new();
+
+                        i += 4;
+                        var numberOfStringPairs = csfBytes[i..(i+4)];
+                        label.NumberOfStringPairs = BitConverter.ToInt32(numberOfStringPairs);
+
+                        i += 4;
+                        var LabelNameLength = csfBytes[i..(i+4)];
+                        label.LabelNameLength = BitConverter.ToInt32(LabelNameLength);
+
+                        i += 4;
+                        var labelName = csfBytes[i..(i+label.LabelNameLength)];
+                        label.LabelName = Bytes2Str(labelName);
+
+                        i += label.LabelNameLength;
+                        var valueIdentifier = csfBytes[i..(i+4)];
+
+                        if (GetIdentifier(valueIdentifier) == CSFIdentifier.RTS)
+                        {
+                            CSFLabelValue value = new();
+                        }
+                        else if (GetIdentifier(valueIdentifier) == CSFIdentifier.WRTS) {
+                            CSFLabelExtraValue extraValue = new();
+                        }
+                    }
 
                     isDone = true;
                     break;
@@ -96,23 +122,12 @@ class Program {
         return sb.ToString();
     }
 
-    static bool CheckIdentifier(List<Byte> identifier) {
-        if (Bytes2Str(identifier) == " FSC")
-        {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    static bool CheckIdentifier(Byte[] identifier) {
-        if (Bytes2Str(identifier) == " FSC")
-        {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
+    static CSFIdentifier GetIdentifier(Byte[] identifier) => Bytes2Str(identifier) switch 
+    {
+        " FSC" => CSFIdentifier.FSC,
+        " LBL" => CSFIdentifier.LBL,
+        " RTS" => CSFIdentifier.RTS,
+        "WRTS" => CSFIdentifier.WRTS,
+        _ => throw new NotSupportedException($"不受支持的 identifier: {Bytes2Str(identifier)}")
+    };
 }

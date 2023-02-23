@@ -43,10 +43,10 @@
     * RA2/YR has been released in this language.
 **/
 public class CSFHeader {
-    public short Version {get;set;}
-    public short NumLabels {get;set;}
-    public short NumStrings {get;set;}
-    public short unused {get;set;}
+    public int Version {get;set;}
+    public int NumLabels {get;set;}
+    public int NumStrings {get;set;}
+    public int unused {get;set;}
     public CSFLanguage Language {get;set;}
 }
 

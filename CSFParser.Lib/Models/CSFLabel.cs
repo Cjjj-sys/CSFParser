@@ -21,4 +21,6 @@ public class CSFLabel {
     public int NumberOfStringPairs {get;set;}
     public int LabelNameLength {get;set;}
     public string LabelName {get;set;}
+
+    public CSFLa
 }
