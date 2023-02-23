@@ -22,5 +22,5 @@ public class CSFLabel {
     public int LabelNameLength {get;set;}
     public string LabelName {get;set;}
 
-    public CSFLa
+    public CSFLabelValue Value {get;set;}
 }

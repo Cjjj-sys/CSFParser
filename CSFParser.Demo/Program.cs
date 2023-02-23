@@ -14,9 +14,10 @@ class Program {
         // PrintDebug(identifier);
         // var body = csfBytes.Where((e, i) => i >= 0x18).ToList();
         CSFHeader header = new();
-        List<CSFLabel> labels = new();
+        List<CSFLabel> csfLabels = new();
         State state = State.Header;
         int i = 0;
+        int currentNumLabels = 0;
         bool isDone = false;
         while (!isDone){
             switch (state)
@@ -45,6 +46,7 @@ class Program {
                         var language = csfBytes[i..(i+4)];
                         header.Language = (CSFLanguage)BitConverter.ToInt32(language);
 
+                        i += 4;
                         state = State.Labels;
                     }
                     else {
@@ -82,9 +84,10 @@ class Program {
 
                             i += 4;
                             var value = csfBytes[i..(i+csfValue.ValueLength*2)];
-                            csfValue.Value = Bytes2Str(value);
+                            csfValue.Value = Unicode2Str(DecodeValue(value, csfValue.ValueLength));
 
                             i += csfValue.ValueLength*2;
+                            csfLabel.Value = csfValue;
                             
                         }
                         else if (GetIdentifier(valueIdentifier) == CSFIdentifier.WRTS) {
@@ -96,20 +99,26 @@ class Program {
 
                             i += 4;
                             var value = csfBytes[i..(i+(csfExtraValue.ValueLength*2))];
-                            csfExtraValue.Value = Unicode2Str(DecodeValue(value));
+                            csfExtraValue.Value = Unicode2Str(DecodeValue(value, csfExtraValue.ValueLength));
 
                             i += (csfExtraValue.ValueLength*2);
                             var extraValueLength = csfBytes[i..(i+4)];
                             csfExtraValue.ExtraValueLength = BitConverter.ToInt32(extraValueLength);
 
                             i += 4;
-                            var extraValue = csfBytes[i..(i+(csfExtraValue.ExtraValueLength*2))];
-                            csfExtraValue.ExtraValue = Unicode2Str(DecodeValue(extraValue));
-                            i += (csfExtraValue.ExtraValueLength*2);
+                            var extraValue = csfBytes[i..(i+(csfExtraValue.ExtraValueLength))];
+                            csfExtraValue.ExtraValue = Bytes2Str(extraValue);
+                            
+                            i += (csfExtraValue.ExtraValueLength);
+                            csfLabel.Value = csfExtraValue;
                         }
+                        csfLabels.Add(csfLabel);
                     }
-
-                    isDone = true;
+                    currentNumLabels += 1;
+                    if (currentNumLabels >= header.NumLabels)
+                    {
+                        isDone = true;
+                    }
                     break;
             }
         }
@@ -141,8 +150,8 @@ class Program {
         return sb.ToString();
     }
 
-    static Byte[] DecodeValue(Byte[] valueData) {
-        int ValueDataLength = valueData.Length << 1;
+    static Byte[] DecodeValue(Byte[] valueData, int valueLength) {
+        int ValueDataLength = valueLength << 1;
         for(int i = 0; i < ValueDataLength; ++i) {
             valueData[i] = (byte)~valueData[i];
         }
