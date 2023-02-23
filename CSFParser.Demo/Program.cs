@@ -55,29 +55,57 @@ class Program {
                     var labelIdentifier = csfBytes[i..(i+4)];
                     if (GetIdentifier(labelIdentifier) == CSFIdentifier.LBL)
                     {
-                        CSFLabel label = new();
+                        CSFLabel csfLabel = new();
 
                         i += 4;
                         var numberOfStringPairs = csfBytes[i..(i+4)];
-                        label.NumberOfStringPairs = BitConverter.ToInt32(numberOfStringPairs);
+                        csfLabel.NumberOfStringPairs = BitConverter.ToInt32(numberOfStringPairs);
 
                         i += 4;
                         var LabelNameLength = csfBytes[i..(i+4)];
-                        label.LabelNameLength = BitConverter.ToInt32(LabelNameLength);
+                        csfLabel.LabelNameLength = BitConverter.ToInt32(LabelNameLength);
 
                         i += 4;
-                        var labelName = csfBytes[i..(i+label.LabelNameLength)];
-                        label.LabelName = Bytes2Str(labelName);
+                        var labelName = csfBytes[i..(i+csfLabel.LabelNameLength)];
+                        csfLabel.LabelName = Bytes2Str(labelName);
 
-                        i += label.LabelNameLength;
+                        i += csfLabel.LabelNameLength;
                         var valueIdentifier = csfBytes[i..(i+4)];
 
                         if (GetIdentifier(valueIdentifier) == CSFIdentifier.RTS)
                         {
-                            CSFLabelValue value = new();
+                            CSFLabelValue csfValue = new();
+
+                            i += 4;
+                            var valueLength = csfBytes[i..(i+4)];
+                            csfValue.ValueLength = BitConverter.ToInt32(valueLength);
+
+                            i += 4;
+                            var value = csfBytes[i..(i+csfValue.ValueLength*2)];
+                            csfValue.Value = Bytes2Str(value);
+
+                            i += csfValue.ValueLength*2;
+                            
                         }
                         else if (GetIdentifier(valueIdentifier) == CSFIdentifier.WRTS) {
-                            CSFLabelExtraValue extraValue = new();
+                            CSFLabelExtraValue csfExtraValue = new();
+                            
+                            i += 4;
+                            var valueLength = csfBytes[i..(i+4)];
+                            csfExtraValue.ValueLength = BitConverter.ToInt32(valueLength);
+
+                            i += 4;
+                            var value = csfBytes[i..(i+(csfExtraValue.ValueLength*2))];
+                            csfExtraValue.Value = Unicode2Str(DecodeValue(value));
+
+                            i += (csfExtraValue.ValueLength*2);
+                            var extraValueLength = csfBytes[i..(i+4)];
+                            csfExtraValue.ExtraValueLength = BitConverter.ToInt32(extraValueLength);
+
+                            i += 4;
+                            var extraValue = csfBytes[i..(i+(csfExtraValue.ExtraValueLength*2))];
+                            csfExtraValue.ExtraValue = Unicode2Str(DecodeValue(extraValue));
+                            i += (csfExtraValue.ExtraValueLength*2);
                         }
                     }
 
@@ -104,15 +132,6 @@ class Program {
         });
     }
 
-    static string Bytes2Str(List<Byte> bytes) {
-        StringBuilder sb = new();
-        bytes.ForEach(e => {
-            var ch = Char.ConvertFromUtf32(e);
-            sb.Append(ch);
-        });
-        return sb.ToString();
-    }
-
     static string Bytes2Str(Byte[] bytes) {
         StringBuilder sb = new();
         bytes.ToList().ForEach(e => {
@@ -120,6 +139,19 @@ class Program {
             sb.Append(ch);
         });
         return sb.ToString();
+    }
+
+    static Byte[] DecodeValue(Byte[] valueData) {
+        int ValueDataLength = valueData.Length << 1;
+        for(int i = 0; i < ValueDataLength; ++i) {
+            valueData[i] = (byte)~valueData[i];
+        }
+        return valueData;
+    }
+
+    static string Unicode2Str(Byte[] bytes) {
+        UnicodeEncoding unicode = new();
+        return unicode.GetString(bytes);
     }
 
     static CSFIdentifier GetIdentifier(Byte[] identifier) => Bytes2Str(identifier) switch 
